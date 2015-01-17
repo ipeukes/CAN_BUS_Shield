@@ -265,9 +265,9 @@ void MCP_CAN::mcp2515_initCANBuffers(void)
 {
     INT8U i, a1, a2, a3;
     
-    INT8U std = 0;               
-    INT8U ext = 1;
-    INT32U ulMask = 0x00, ulFilt = 0x00;
+    //INT8U std = 0;               
+    //INT8U ext = 1;
+    //INT32U ulMask = 0x00, ulFilt = 0x00;
 
 
     //mcp2515_write_id(MCP_RXM0SIDH, ext, ulMask);			/*Set both masks to 0           */
@@ -548,7 +548,7 @@ INT8U MCP_CAN::begin(INT8U speedset)
 {
     INT8U res;
 
-    SPI.begin();
+    //SPI.begin();  // SPI is enabled in setup function
     res = mcp2515_init(speedset);
     if (res == MCP2515_OK) return CAN_OK;
     else return CAN_FAILINIT;
@@ -769,7 +769,7 @@ INT8U MCP_CAN::sendMsg()
 INT8U MCP_CAN::sendMsgBuf(INT32U id, INT8U ext, INT8U rtr, INT8U len, INT8U *buf)
 {
     setMsg(id, ext, len, rtr, buf);
-    sendMsg();
+    return sendMsg();
 }
 
 /*********************************************************************************************************
@@ -779,7 +779,7 @@ INT8U MCP_CAN::sendMsgBuf(INT32U id, INT8U ext, INT8U rtr, INT8U len, INT8U *buf
 INT8U MCP_CAN::sendMsgBuf(INT32U id, INT8U ext, INT8U len, INT8U *buf)
 {
     setMsg(id, ext, len, buf);
-    sendMsg();
+    return sendMsg();
 }
 
 
@@ -797,12 +797,14 @@ INT8U MCP_CAN::readMsg()
     {
         mcp2515_read_canMsg( MCP_RXBUF_0);
         mcp2515_modifyRegister(MCP_CANINTF, MCP_RX0IF, 0);
+	m_nfilhit &= 1;					         /* Msg Buffer 0 has only one Filterbit */
         res = CAN_OK;
     }
     else if ( stat & MCP_STAT_RX1IF )                                   /* Msg in Buffer 1              */
     {
         mcp2515_read_canMsg( MCP_RXBUF_1);
         mcp2515_modifyRegister(MCP_CANINTF, MCP_RX1IF, 0);
+	m_nfilhit |= 0x80;					    /* use Bit 7 as RX Buffer indicator  */
         res = CAN_OK;
     }
     else 
@@ -816,7 +818,7 @@ INT8U MCP_CAN::readMsg()
 ** Function name:           readMsgBuf
 ** Descriptions:            read message buf
 *********************************************************************************************************/
-INT8U MCP_CAN::readMsgBuf(INT8U *len, INT8U buf[])
+INT8U MCP_CAN::readMsgBuf(INT8U *len, INT8U *buf)
 {
     INT8U  rc;
     
@@ -834,10 +836,10 @@ INT8U MCP_CAN::readMsgBuf(INT8U *len, INT8U buf[])
 }
 
 /*********************************************************************************************************
-** Function name:           readMsgBufID
+** Function name:           readMsgBuf
 ** Descriptions:            read message buf and can bus source ID
 *********************************************************************************************************/
-INT8U MCP_CAN::readMsgBufID(INT32U *ID, INT8U *len, INT8U buf[])
+INT8U MCP_CAN::readMsgBuf(INT32U *ID, INT8U *len, INT8U *buf)
 {
     INT8U rc;
     rc = readMsg();
@@ -845,6 +847,29 @@ INT8U MCP_CAN::readMsgBufID(INT32U *ID, INT8U *len, INT8U buf[])
     if (rc == CAN_OK) {
        *len = m_nDlc;
        *ID  = m_nID;
+       for(int i = 0; i<m_nDlc && i < MAX_CHAR_IN_MESSAGE; i++) {
+          buf[i] = m_nDta[i];
+       }
+    } else {
+       *len = 0;
+    }
+    return rc;
+}
+
+
+/*********************************************************************************************************
+** Function name:           readMsgBuf
+** Descriptions:            read message buf and can bus source ID + filter hit bits
+*********************************************************************************************************/
+INT8U MCP_CAN::readMsgBuf(INT8U *fil, INT32U *ID, INT8U *len, INT8U *buf)
+{
+    INT8U rc;
+    rc = readMsg();
+
+    if (rc == CAN_OK) {
+       *len = m_nDlc;
+       *ID  = m_nID;
+       *fil = m_nfilhit;
        for(int i = 0; i<m_nDlc && i < MAX_CHAR_IN_MESSAGE; i++) {
           buf[i] = m_nDta[i];
        }
@@ -906,6 +931,15 @@ INT32U MCP_CAN::getCanId(void)
 INT8U MCP_CAN::isRemoteRequest(void)
 {
     return m_nRtr;
+} 
+
+/*********************************************************************************************************
+** Function name:           getFilterHit
+** Descriptions:            when receive something ,u can check the matching filter
+*********************************************************************************************************/
+INT8U MCP_CAN::getFilterHit(void)
+{
+    return m_nfilhit;
 } 
 /*********************************************************************************************************
   END FILE
