@@ -315,11 +315,15 @@ INT8U MCP_CAN::mcp2515_init(const INT8U canSpeed)                       /* mcp25
     {
 #if DEBUG_MODE
       Serial.print("Enter setting mode fall\r\n"); 
+#else
+      delay(10);
 #endif
       return res;
     }
 #if DEBUG_MODE
     Serial.print("Enter setting mode success \r\n");
+#else
+    delay(10);
 #endif
 
                                                                         /* set boadrate                 */
@@ -327,11 +331,15 @@ INT8U MCP_CAN::mcp2515_init(const INT8U canSpeed)                       /* mcp25
     {
 #if DEBUG_MODE
       Serial.print("set rate fall!!\r\n");
+#else
+      delay(10);
 #endif
       return res;
     }
 #if DEBUG_MODE
     Serial.print("set rate success!!\r\n");
+#else
+    delay(10);
 #endif
 
     if ( res == MCP2515_OK ) {
@@ -369,6 +377,8 @@ INT8U MCP_CAN::mcp2515_init(const INT8U canSpeed)                       /* mcp25
         {
 #if DEBUG_MODE        
           Serial.print("Enter Normal Mode Fall!!\r\n");
+#else
+            delay(10);
 #endif           
           return res;
         }
@@ -376,6 +386,8 @@ INT8U MCP_CAN::mcp2515_init(const INT8U canSpeed)                       /* mcp25
 
 #if DEBUG_MODE
           Serial.print("Enter Normal Mode Success!!\r\n");
+#else
+            delay(10);
 #endif
 
     }
@@ -551,14 +563,18 @@ INT8U MCP_CAN::init_Mask(INT8U num, INT8U ext, INT32U ulData)
     INT8U res = MCP2515_OK;
 #if DEBUG_MODE
     Serial.print("Begin to set Mask!!\r\n");
+#else
+    delay(10);
 #endif
     res = mcp2515_setCANCTRL_Mode(MODE_CONFIG);
     if(res > 0){
 #if DEBUG_MODE
     Serial.print("Enter setting mode fall\r\n"); 
+#else
+    delay(10);
 #endif
-  return res;
-}
+    return res;
+    }
     
     if (num == 0){
         mcp2515_write_id(MCP_RXM0SIDH, ext, ulData);
@@ -573,11 +589,15 @@ INT8U MCP_CAN::init_Mask(INT8U num, INT8U ext, INT32U ulData)
     if(res > 0){
 #if DEBUG_MODE
     Serial.print("Enter normal mode fall\r\n"); 
+#else
+    delay(10);
 #endif
     return res;
   }
 #if DEBUG_MODE
     Serial.print("set Mask success!!\r\n");
+#else
+    delay(10);
 #endif
     return res;
 }
@@ -591,12 +611,16 @@ INT8U MCP_CAN::init_Filt(INT8U num, INT8U ext, INT32U ulData)
     INT8U res = MCP2515_OK;
 #if DEBUG_MODE
     Serial.print("Begin to set Filter!!\r\n");
+#else
+    delay(10);
 #endif
     res = mcp2515_setCANCTRL_Mode(MODE_CONFIG);
     if(res > 0)
     {
 #if DEBUG_MODE
       Serial.print("Enter setting mode fall\r\n"); 
+#else
+      delay(10);
 #endif
       return res;
     }
@@ -636,11 +660,15 @@ INT8U MCP_CAN::init_Filt(INT8U num, INT8U ext, INT32U ulData)
     {
 #if DEBUG_MODE
       Serial.print("Enter normal mode fall\r\nSet filter fail!!\r\n"); 
+#else
+      delay(10);
 #endif
       return res;
     }
 #if DEBUG_MODE
     Serial.print("set Filter success!!\r\n");
+#else
+    delay(10);
 #endif
     
     return res;
@@ -657,6 +685,24 @@ INT8U MCP_CAN::setMsg(INT32U id, INT8U ext, INT8U len, INT8U rtr, INT8U *pData)
     m_nID     = id;
     m_nDlc    = len;
     m_nRtr    = rtr;
+    for(i = 0; i<MAX_CHAR_IN_MESSAGE; i++)
+    {
+        m_nDta[i] = *(pData+i);
+    }
+    return MCP2515_OK;
+}
+
+
+/*********************************************************************************************************
+** Function name:           setMsg
+** Descriptions:            set can message, such as dlc, id, dta[] and so on
+*********************************************************************************************************/
+INT8U MCP_CAN::setMsg(INT32U id, INT8U ext, INT8U len, INT8U *pData)
+{
+    int i = 0;
+    m_nExtFlg = ext;
+    m_nID     = id;
+    m_nDlc    = len;
     for(i = 0; i<MAX_CHAR_IN_MESSAGE; i++)
     {
         m_nDta[i] = *(pData+i);
@@ -725,6 +771,17 @@ INT8U MCP_CAN::sendMsgBuf(INT32U id, INT8U ext, INT8U rtr, INT8U len, INT8U *buf
     setMsg(id, ext, len, rtr, buf);
     sendMsg();
 }
+
+/*********************************************************************************************************
+** Function name:           sendMsgBuf
+** Descriptions:            send buf
+*********************************************************************************************************/
+INT8U MCP_CAN::sendMsgBuf(INT32U id, INT8U ext, INT8U len, INT8U *buf)
+{
+    setMsg(id, ext, len, buf);
+    sendMsg();
+}
+
 
 /*********************************************************************************************************
 ** Function name:           readMsg
