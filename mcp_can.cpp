@@ -483,14 +483,16 @@ void MCP_CAN::mcp2515_read_canMsg( const INT8U buffer_sidh_addr)        /* read 
 
     ctrl = mcp2515_readRegister( mcp_addr-1 );
     m_nDlc = mcp2515_readRegister( mcp_addr+4 );
-
+    m_nRtr = (ctrl & 0x08) >> 3;
+    m_nfilhit = ctrl & 0x07;
+/*
     if ((ctrl & 0x08)) {
         m_nRtr = 1;
     }
     else {
         m_nRtr = 0;
     }
-
+*/
     m_nDlc &= MCP_DLC_MASK;
     mcp2515_readRegisterS( mcp_addr+5, &(m_nDta[0]), m_nDlc );
 }
