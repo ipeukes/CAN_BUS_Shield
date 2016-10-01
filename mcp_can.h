@@ -30,7 +30,7 @@
 class MCP_CAN
 {
     private:
-    
+
     INT8U   m_nExtFlg;                                                  /* identifier xxxID             */
                                                                         /* either extended (the 29 LSB) */
                                                                         /* or standard (the 11 LSB)     */
@@ -44,25 +44,24 @@ class MCP_CAN
 /*
 *  mcp2515 driver function 
 */
-   // private:
 private:
 
     void mcp2515_reset(void);                                           /* reset mcp2515                */
 
     INT8U mcp2515_readRegister(const INT8U address);                    /* read mcp2515's register      */
-    
-    void mcp2515_readRegisterS(const INT8U address, 
-	                       INT8U values[], 
-                               const INT8U n);
+
+    void mcp2515_readRegisterS(const INT8U address,
+                                INT8U values[],
+                                const INT8U n);
     void mcp2515_setRegister(const INT8U address,                       /* set mcp2515's register       */
                              const INT8U value);
 
     void mcp2515_setRegisterS(const INT8U address,                      /* set mcp2515's registers      */
                               const INT8U values[],
                               const INT8U n);
-    
+
     void mcp2515_initCANBuffers(void);
-    
+
     void mcp2515_modifyRegister(const INT8U address,                    /* set bit of one register      */
                                 const INT8U mask,
                                 const INT8U data);
@@ -87,7 +86,7 @@ private:
 
 /*
 *  can operator function
-*/    
+*/
 
     INT8U setMsg(INT32U id, INT8U ext, INT8U len, INT8U rtr, INT8U *pData); /* set message                  */  
     INT8U setMsg(INT32U id, INT8U ext, INT8U len, INT8U *pData); /* set message                  */  

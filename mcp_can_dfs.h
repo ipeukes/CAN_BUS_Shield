@@ -313,7 +313,7 @@
 #define MCP_RXBUF_0 (MCP_RXB0SIDH)
 #define MCP_RXBUF_1 (MCP_RXB1SIDH)
 
-//#define SPICS 10
+//#define SPICS 13
 #define MCP2515_SELECT()   digitalWrite(SPICS, LOW)
 #define MCP2515_UNSELECT() digitalWrite(SPICS, HIGH)
 
