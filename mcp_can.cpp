@@ -34,7 +34,11 @@ void MCP_CAN::mcp2515_reset(void)
 	MCP2515_SELECT();
 	spi_readwrite(MCP_RESET);
 	MCP2515_UNSELECT();
-	delay(10);
+    _delay_ms(0.1);
+	MCP2515_SELECT();
+	spi_readwrite(MCP_RESET);
+	MCP2515_UNSELECT();
+    _delay_ms(0.1);
 }
 
 /*********************************************************************************************************
@@ -126,7 +130,6 @@ INT8U MCP_CAN::mcp2515_readStatus(void)
 	spi_readwrite(MCP_READ_STATUS);
 	i = spi_read();
 	MCP2515_UNSELECT();
-
 	return i;
 }
 
@@ -137,19 +140,14 @@ INT8U MCP_CAN::mcp2515_readStatus(void)
 INT8U MCP_CAN::mcp2515_setCANCTRL_Mode(const INT8U newmode)
 {
 	INT8U i;
-
 	mcp2515_modifyRegister(MCP_CANCTRL, MODE_MASK, newmode);
-
 	i = mcp2515_readRegister(MCP_CANCTRL);
 	i &= MODE_MASK;
-
 	if ( i == newmode )
 	{
 		return MCP2515_OK;
 	}
-
 	return MCP2515_FAIL;
-
 }
 
 /*********************************************************************************************************
@@ -204,7 +202,7 @@ INT8U MCP_CAN::mcp2515_configRate(const INT8U canSpeed)
 			cfg3 = MCP_16MHz_80kBPS_CFG3;
 			break;
 
-		case (CAN_100KBPS):                                             /* 100KBPS                  */
+		case (CAN_100KBPS):
 			cfg1 = MCP_16MHz_100kBPS_CFG1;
 			cfg2 = MCP_16MHz_100kBPS_CFG2;
 			cfg3 = MCP_16MHz_100kBPS_CFG3;
@@ -308,26 +306,21 @@ INT8U MCP_CAN::mcp2515_init(const INT8U canSpeed)                       /* mcp25
 	INT8U res;
 
 	mcp2515_reset();
-
 	res = mcp2515_setCANCTRL_Mode(MODE_CONFIG);
 	if(res > 0)
 	{
-		delay(10);
 		return res;
 	}
-	delay(10);
 
-	/* set boadrate                 */
+	/* set baudrate                 */
 	if(mcp2515_configRate(canSpeed))
 	{
-		delay(10);
 		return res;
 	}
-	delay(10);
 
 	if ( res == MCP2515_OK ) {
 
-		/* init canbuffers              */
+		/* init canbuffers and filters  */
 		mcp2515_initCANBuffers();
 
 		/* interrupt mode               */
@@ -358,10 +351,8 @@ INT8U MCP_CAN::mcp2515_init(const INT8U canSpeed)                       /* mcp25
 		res = mcp2515_setCANCTRL_Mode(MODE_NORMAL);
 		if(res)
 		{
-			delay(10);
 			return res;
 		}
-		delay(10);
 	}
 	return res;
 
@@ -525,10 +516,8 @@ INT8U MCP_CAN::begin(INT8U speedset)
 INT8U MCP_CAN::init_Mask(INT8U num, INT8U ext, INT32U ulData)
 {
 	INT8U res = MCP2515_OK;
-	delay(10);
 	res = mcp2515_setCANCTRL_Mode(MODE_CONFIG);
 	if(res > 0){
-		delay(10);
 		return res;
 	}
 
@@ -542,10 +531,8 @@ INT8U MCP_CAN::init_Mask(INT8U num, INT8U ext, INT32U ulData)
 	
 	res = mcp2515_setCANCTRL_Mode(MODE_NORMAL);
 	if(res > 0){
-		delay(10);
 		return res;
 	}
-	delay(10);
 	return res;
 }
 
@@ -556,11 +543,9 @@ INT8U MCP_CAN::init_Mask(INT8U num, INT8U ext, INT32U ulData)
 INT8U MCP_CAN::init_Filt(INT8U num, INT8U ext, INT32U ulData)
 {
 	INT8U res = MCP2515_OK;
-	delay(10);
 	res = mcp2515_setCANCTRL_Mode(MODE_CONFIG);
-	if(res > 0)
+	if(res != MCP2515_OK)
 	{
-		delay(10);
 		return res;
 	}
 	
@@ -595,12 +580,10 @@ INT8U MCP_CAN::init_Filt(INT8U num, INT8U ext, INT32U ulData)
 	}
 	
 	res = mcp2515_setCANCTRL_Mode(MODE_NORMAL);
-	if(res > 0)
+	if(res != MCP2515_OK)
 	{
-		delay(10);
 		return res;
 	}
-	delay(10);
 	return res;
 }
 
