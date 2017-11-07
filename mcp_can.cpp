@@ -1267,7 +1267,9 @@ byte MCP_CAN::checkReceive(void)
 byte MCP_CAN::checkError(void)
 {
     byte eflg = mcp2515_readRegister(MCP_EFLG);
-    return ((eflg & MCP_EFLG_ERRORMASK) ? CAN_CTRLERROR : CAN_OK);
+    //return ((eflg & MCP_EFLG_ERRORMASK) ? CAN_CTRLERROR : CAN_OK);
+    //Returning errorflags instead of CAN_CTRLERROR...
+    return (eflg);
 }
 
 /*********************************************************************************************************
