@@ -148,6 +148,7 @@ public:
     byte readRxTxStatus(void);                                      // read has something send or received
     byte checkClearRxStatus(byte *status);                          // read and clear and return first found rx status bit
     byte checkClearTxStatus(byte *status, byte iTxBuf=0xff);        // read and clear and return first found or buffer specified tx status bit
+    void clearRxOverload(void);                                      // Clear the RX Overflow bits in EFLG
 
 };
 
