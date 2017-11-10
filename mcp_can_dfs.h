@@ -53,6 +53,13 @@
 #include <inttypes.h>
 
 
+// RXFRAMETYPE
+// if defined and 1: receive only messages with std. ID
+// if defined and 2: receive only messages with ext. ID
+// if undefined or other value: receive messages with either ID
+//
+#define RXFRAMETYPE  2
+
 // if print debug information
 #define DEBUG_EN        0
 

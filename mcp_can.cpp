@@ -631,6 +631,20 @@ byte MCP_CAN::mcp2515_init(const byte canSpeed, const byte clock)
                              MCP_RXB_RX_ANY | MCP_RXB_BUKT_MASK);
       mcp2515_modifyRegister(MCP_RXB1CTRL, MCP_RXB_RX_MASK,
                              MCP_RXB_RX_ANY);
+#elif RXFRAMETYPE == 1
+      // enable both receive-buffers to receive messages with std. identifiers and enable rollover
+      mcp2515_modifyRegister(MCP_RXB0CTRL,
+                             MCP_RXB_RX_MASK | MCP_RXB_BUKT_MASK,
+                             MCP_RXB_RX_STD| MCP_RXB_BUKT_MASK);
+      mcp2515_modifyRegister(MCP_RXB1CTRL, MCP_RXB_RX_MASK,
+                             MCP_RXB_RX_STD);
+#elif RXFRAMETYPE == 2
+      // enable both receive-buffers to receive messages with ext. identifiers and enable rollover
+      mcp2515_modifyRegister(MCP_RXB0CTRL,
+                             MCP_RXB_RX_MASK | MCP_RXB_BUKT_MASK,
+                             MCP_RXB_RX_EXT | MCP_RXB_BUKT_MASK);
+      mcp2515_modifyRegister(MCP_RXB1CTRL, MCP_RXB_RX_MASK,
+                             MCP_RXB_RX_EXT);
 #else
       // enable both receive-buffers to receive messages with std. and ext. identifiers and enable rollover
       mcp2515_modifyRegister(MCP_RXB0CTRL,
