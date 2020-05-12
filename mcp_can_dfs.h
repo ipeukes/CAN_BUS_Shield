@@ -109,14 +109,14 @@
 #define MCP_STAT_RX0IF (1<<0)
 #define MCP_STAT_RX1IF (1<<1)
 
-#define MCP_EFLG_RX1OVR (1<<7)
-#define MCP_EFLG_RX0OVR (1<<6)
-#define MCP_EFLG_TXBO   (1<<5)
-#define MCP_EFLG_TXEP   (1<<4)
-#define MCP_EFLG_RXEP   (1<<3)
-#define MCP_EFLG_TXWAR  (1<<2)
-#define MCP_EFLG_RXWAR  (1<<1)
-#define MCP_EFLG_EWARN  (1<<0)
+#define MCP_EFLG_RX1OVR 0x80 // (1<<7)
+#define MCP_EFLG_RX0OVR 0x40 // (1<<6)
+#define MCP_EFLG_TXBO   0x20 // (1<<5)
+#define MCP_EFLG_TXEP   0x10 // (1<<4)
+#define MCP_EFLG_RXEP   0x08 // (1<<3)
+#define MCP_EFLG_TXWAR  0x04 // (1<<2)
+#define MCP_EFLG_RXWAR  0x02 // (1<<1)
+#define MCP_EFLG_EWARN  0x01 // (1<<0)
 #define MCP_EFLG_ERRORMASK  (0xF8)                                      // 5 MS-Bits
 
 // Define MCP2515 register addresses
